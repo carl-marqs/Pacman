@@ -12,12 +12,14 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static int LARGURA = 640, ALTURA = 480; // Resolução do jogo
+	public static int LARGURA = 1184, ALTURA = 608; // Resolução do jogo
 	
 	private boolean estaRodando = false; // Armazena o estado do jogo
 	private Thread thread;
 	
-	public static Jogador jogador; // Armazena a variável do jogador
+	public static Jogador jogador;
+	public static Mapa mapa; // Armazena em qual labirinto jogar
+	public static Malha malha;
 	
 	public static void main(String[] args)
 	{
@@ -44,6 +46,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		
 		addKeyListener(this);
 		jogador = new Jogador((LARGURA/2)-16, (ALTURA/2)-16); // Insere o jogador no meio do mapa
+		mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+		malha = new Malha("/assets/pacman_spritesheet.png"); // Usando a malha de sprites original
 	}
 	
 	public synchronized void start()
@@ -68,6 +72,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	// Calcula toda a lógica do jogo
 	{
 		jogador.tick(); // Calcula a lógica do jogador
+		mapa.tick();
 	}
 	
 	private void render()
@@ -83,7 +88,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		graficos.setColor(Color.black); // Define a cor do fundo
 		graficos.fillRect(0, 0, LARGURA, ALTURA); // Retângulo no qual renderizar
 		jogador.render(graficos); // Renderizar o jogador também
-		
+		mapa.render(graficos);
 		graficos.dispose();
 		buffer.show();
 	}
@@ -93,12 +98,11 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	// Game loop
 	{
 		double tickSegundo = 60; // Velocidade de atualização do jogo
-		int fps = 0;
 		
 		double delta = 0;
 		double timer = System.currentTimeMillis(); // Contador do tempo
 		long ultimoTempo = System.nanoTime(); // Tempo desde a última atualização
-		double intervalo = 1000000000/tickSegundo;
+		double intervalo = 1e9/tickSegundo;
 		
 		requestFocus(); // Ao iniciar o jogo, trazê-lo para primeiro plano
 		
@@ -113,14 +117,11 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			{
 				tick(); // Lógica do jogo
 				render();
-				fps++; // Conta os frames desse segundo
 				delta--;
 			}
 			
-			if (System.currentTimeMillis() - timer >= 1000)
+			if (System.currentTimeMillis()-agora >= 1000)
 			{
-				System.out.println(fps);
-				fps = 0; // Reseta a contagem para o próximo segundo
 				timer += 1000; // Acrescenta 1s ao tempo atual
 			}
 		}
