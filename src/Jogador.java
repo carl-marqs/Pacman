@@ -11,12 +11,12 @@ public class Jogador extends Rectangle
 
 	public Jogador(int x, int y)
 	{
-		setBounds(x, y, 32, 32); // Definir tamanho e posiÁ„o do ret‚ngulo
+		setBounds(x, y, 32, 32); // Definir tamanho e posi√ß√£o do ret√¢ngulo
 	}
 	
 	public void tick()
 	{
-		// MovimentaÁ„o do jogador
+		// Movimenta√ß√£o do jogador
 		if (cima) y -= velocidade;
 		if (direita) x += velocidade;
 		if (baixo) y += velocidade;
