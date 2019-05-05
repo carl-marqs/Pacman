@@ -12,19 +12,19 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static int LARGURA = 640, ALTURA = 480; // Resolução do jogo
+	public static int LARGURA = 640, ALTURA = 480; // ResoluÃ§Ã£o do jogo
 	
 	private boolean estaRodando = false; // Armazena o estado do jogo
 	private Thread thread;
 	
-	public static Jogador jogador; // Armazena a variável do jogador
+	public static Jogador jogador; // Armazena a variÃ¡vel do jogador
 	
 	public static void main(String[] args)
 	{
 		Pacman jogo = new Pacman();
 		
 		JFrame frame = new JFrame();
-		frame.setTitle("Pacman"); // Define o título do jogo
+		frame.setTitle("Pacman"); // Define o tÃ­tulo do jogo
 		frame.add(jogo);
 		frame.setResizable(false); // Proibir redimensionar a janela
 		frame.pack();
@@ -37,10 +37,10 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	
 	public Pacman()
 	{
-		Dimension resolucao = new Dimension(LARGURA, ALTURA); // Define a resolução do jogo
-		setPreferredSize(resolucao); // Aplica a resolução definida
-		setMinimumSize(resolucao); // Define a resolução mínima da janela
-		setMaximumSize(resolucao); // Define a resolução máxima da janela
+		Dimension resolucao = new Dimension(LARGURA, ALTURA); // Define a resoluÃ§Ã£o do jogo
+		setPreferredSize(resolucao); // Aplica a resoluÃ§Ã£o definida
+		setMinimumSize(resolucao); // Define a resoluÃ§Ã£o mÃ­nima da janela
+		setMaximumSize(resolucao); // Define a resoluÃ§Ã£o mÃ¡xima da janela
 		
 		addKeyListener(this);
 		jogador = new Jogador((LARGURA/2)-16, (ALTURA/2)-16); // Insere o jogador no meio do mapa
@@ -48,8 +48,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	
 	public synchronized void start()
 	{
-		if (estaRodando) return; // Se já estiver rodando, não fazer nada
-		estaRodando = true; // O jogo começou a ser executado nesse frame
+		if (estaRodando) return; // Se jÃ¡ estiver rodando, nÃ£o fazer nada
+		estaRodando = true; // O jogo comeÃ§ou a ser executado nesse frame
 		
 		thread = new Thread(this);
 		thread.start();
@@ -57,7 +57,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	
 	public synchronized void stop()
 	{
-		if (!estaRodando) return; // Se não está rodando, não fazer nada
+		if (!estaRodando) return; // Se nÃ£o estÃ¡ rodando, nÃ£o fazer nada
 		estaRodando = false; // O jogo foi finalizado
 		
 		try { thread.join(); }
@@ -65,9 +65,9 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	}
 	
 	private void tick()
-	// Calcula toda a lógica do jogo
+	// Calcula toda a lÃ³gica do jogo
 	{
-		jogador.tick(); // Calcula a lógica do jogador
+		jogador.tick(); // Calcula a lÃ³gica do jogador
 	}
 	
 	private void render()
@@ -81,8 +81,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		
 		Graphics graficos = buffer.getDrawGraphics();
 		graficos.setColor(Color.black); // Define a cor do fundo
-		graficos.fillRect(0, 0, LARGURA, ALTURA); // Retângulo no qual renderizar
-		jogador.render(graficos); // Renderizar o jogador também
+		graficos.fillRect(0, 0, LARGURA, ALTURA); // RetÃ¢ngulo no qual renderizar
+		jogador.render(graficos); // Renderizar o jogador tambÃ©m
 		
 		graficos.dispose();
 		buffer.show();
@@ -92,26 +92,26 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void run()
 	// Game loop
 	{
-		double tickSegundo = 60; // Velocidade de atualização do jogo
+		double tickSegundo = 60; // Velocidade de atualizaÃ§Ã£o do jogo
 		int fps = 0;
 		
 		double delta = 0;
 		double timer = System.currentTimeMillis(); // Contador do tempo
-		long ultimoTempo = System.nanoTime(); // Tempo desde a última atualização
+		long ultimoTempo = System.nanoTime(); // Tempo desde a Ãºltima atualizaÃ§Ã£o
 		double intervalo = 1000000000/tickSegundo;
 		
-		requestFocus(); // Ao iniciar o jogo, trazê-lo para primeiro plano
+		requestFocus(); // Ao iniciar o jogo, trazÃª-lo para primeiro plano
 		
 		while (estaRodando)
 		{
 			long agora = System.nanoTime(); // Armazena o tempo atual
 			delta += (agora-ultimoTempo)/intervalo; // Se o tempo atual for maior do que deveria ser, delta vai "compensar" esse valor
-			ultimoTempo = agora; // Já calculamos o tempo atual, portanto, é o último tempo calculado
+			ultimoTempo = agora; // JÃ¡ calculamos o tempo atual, portanto, Ã© o Ãºltimo tempo calculado
 			
 			while (delta >= 1)
-			// Mantém o jogo rodando à velocidade tickSegundo
+			// MantÃ©m o jogo rodando Ã  velocidade tickSegundo
 			{
-				tick(); // Lógica do jogo
+				tick(); // LÃ³gica do jogo
 				render();
 				fps++; // Conta os frames desse segundo
 				delta--;
@@ -120,7 +120,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			if (System.currentTimeMillis() - timer >= 1000)
 			{
 				System.out.println(fps);
-				fps = 0; // Reseta a contagem para o próximo segundo
+				fps = 0; // Reseta a contagem para o prÃ³ximo segundo
 				timer += 1000; // Acrescenta 1s ao tempo atual
 			}
 		}
@@ -132,7 +132,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void keyPressed(KeyEvent tecla)
 	// Ao pressionar uma tecla...
 	{
-		// Se for uma tecla de movimentação, mover-se
+		// Se for uma tecla de movimentaÃ§Ã£o, mover-se
 		if (tecla.getKeyCode() == KeyEvent.VK_UP) jogador.cima = true;
 		if (tecla.getKeyCode() == KeyEvent.VK_RIGHT) jogador.direita = true;
 		if (tecla.getKeyCode() == KeyEvent.VK_DOWN) jogador.baixo = true;
@@ -143,7 +143,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void keyReleased(KeyEvent tecla)
 	// Ao soltar a tecla...
 	{
-		// Se for uma tecla de movimentação, parar de mover
+		// Se for uma tecla de movimentaÃ§Ã£o, parar de mover
 		if (tecla.getKeyCode() == KeyEvent.VK_UP) jogador.cima = false;
 		if (tecla.getKeyCode() == KeyEvent.VK_RIGHT) jogador.direita = false;
 		if (tecla.getKeyCode() == KeyEvent.VK_DOWN) jogador.baixo = false;
