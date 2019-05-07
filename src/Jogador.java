@@ -6,7 +6,7 @@ public class Jogador extends Rectangle
 	private static final long serialVersionUID = 1L;
 	
 	public boolean cima, direita, baixo, esquerda;
-	public int velocidade = 2;
+	public int velocidade = 1;
 
 	public Jogador(int x, int y)
 	{
@@ -53,6 +53,14 @@ public class Jogador extends Rectangle
 			Pacman.jogador = new Jogador(0,0);
 			Pacman.mapa = new Mapa("/mapas/mapa1.png");
 			return;
+		}
+		
+		for (int i=0; i < Pacman.mapa.fantasmas.size(); i++)
+		{
+			if (Pacman.mapa.fantasmas.get(i).intersects(this))
+			{
+				System.exit(0);
+			}
 		}
 	}
 	
