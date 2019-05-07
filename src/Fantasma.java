@@ -8,15 +8,15 @@ public class Fantasma extends Rectangle
 	
 	public Random aleatorio;
 	
-	private int velocidade = 2;
-	
-	private int modo=0; // 0: aleatorio | 1: inteligente
-	private int direcao=0; // 0: cima | 1: direita | 2: baixo | 3: esquerda
+	private int tempo=0;
+	private int velocidade = 1;
+	private int modo=0; // 0: aleatorio | 1: inteligente | 2: preso
+	private int ultimaDirecao=-1, direcao=0; // 0: cima | 1: direita | 2: baixo | 3: esquerda
 
 	public Fantasma(int x, int y)
 	{
 		aleatorio = new Random();
-		
+
 		setBounds(x,y, 32,32);
 		direcao = aleatorio.nextInt(4);
 	}
@@ -41,10 +41,10 @@ public class Fantasma extends Rectangle
 		{
 			if (direcao == 0)
 			{
-				if (podeMover(x,y-velocidade))
+				if (podeMover(x,y-velocidade)) // Se não encontrar obstáculos à sua frente, pode mover
 					y -= velocidade;
 				else
-					direcao = aleatorio.nextInt(4);
+					direcao = aleatorio.nextInt(4); // Se encontrar, ir pra outra direção aleatoriamente
 				
 			} else if (direcao == 1)
 			{
@@ -68,9 +68,147 @@ public class Fantasma extends Rectangle
 					direcao = aleatorio.nextInt(4);
 			}
 			
-		} else
-		{
+			tempo++;
+			if (tempo >= 60*4)
+			{
+				modo = 1;
+				tempo = 0;
+			}
 			
+		} else if (modo == 1) // Se está no modo inteligente
+		{
+			boolean movendo = false;
+			
+			if (y > Pacman.jogador.y)
+				if (podeMover(x,y-velocidade))
+				{
+					y -= velocidade;
+					movendo = true;
+					ultimaDirecao = 0;
+				}
+			
+			if (x < Pacman.jogador.x)
+				if (podeMover(x+velocidade,y))
+				{
+					x += velocidade;
+					movendo = true;
+					ultimaDirecao = 1;
+				}
+			
+			if (y < Pacman.jogador.y)
+				if (podeMover(x,y+velocidade))
+				{
+					y += velocidade;
+					movendo = true;
+					ultimaDirecao = 2;
+				}
+			
+			if (x > Pacman.jogador.x)
+				if (podeMover(x-velocidade,y))
+				{
+					x -= velocidade;
+					movendo = true;
+					ultimaDirecao = 3;
+				}
+			
+			if (x == Pacman.jogador.x && y == Pacman.jogador.y)
+				movendo = true;
+			
+			if (!movendo)
+				modo = 2; // Não está movendo! Precisa encontrar um caminho.
+			
+			tempo++;
+			if (tempo >= 60*8)
+			{
+				modo = 0;
+				tempo = 0;
+			}
+		
+		} else if (modo == 2) // Está preso, precisa encontrar um caminho
+		{
+			if (ultimaDirecao == 0)
+			{
+				if (x < Pacman.jogador.x)
+				{
+					if (podeMover(x+velocidade, y))
+					{
+						x += velocidade;
+						modo = 1; // Encontramos o caminho!
+					}
+				
+				} else if (podeMover(x-velocidade, y))
+				{
+					x -= velocidade;
+					modo = 1; // Encontramos o caminho!
+				}
+				
+				if (podeMover(x,y-velocidade))
+					y -= velocidade; 
+				
+			} else if (ultimaDirecao == 1)
+			{
+				if (y < Pacman.jogador.y)
+				{
+					if (podeMover(x, y+velocidade))
+					{
+						y += velocidade;
+						modo = 1; // Encontramos o caminho!
+					}
+				
+				} else if (podeMover(x, y-velocidade))
+				{
+					y -= velocidade;
+					modo = 1; // Encontramos o caminho!
+				}
+				
+				if (podeMover(x+velocidade,y))
+					x += velocidade; 
+				
+			} else if (ultimaDirecao == 2)
+			{
+				if (x < Pacman.jogador.x)
+				{
+					if (podeMover(x+velocidade, y))
+					{
+						x += velocidade;
+						modo = 1; // Encontramos o caminho!
+					}
+				
+				} else if (podeMover(x-velocidade, y))
+				{
+					x -= velocidade;
+					modo = 1; // Encontramos o caminho!
+				}
+				
+				if (podeMover(x,y+velocidade))
+					y += velocidade; 
+				
+			} else if (ultimaDirecao == 3)
+			{
+				if (y < Pacman.jogador.y)
+				{
+					if (podeMover(x, y+velocidade))
+					{
+						y += velocidade;
+						modo = 1; // Encontramos o caminho!
+					}
+				
+				} else if (podeMover(x, y-velocidade))
+				{
+					y -= velocidade;
+					modo = 1; // Encontramos o caminho!
+				}
+				
+				if (podeMover(x-velocidade,y))
+					x -= velocidade; 
+			}
+			
+			tempo++;
+			if (tempo >= 60*0.05)
+			{
+				modo = 0;
+				tempo = 0;
+			}
 		}
 	}
 	
