@@ -97,7 +97,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void run()
 	// Game loop
 	{
-		double tickSegundo = 60; // Velocidade de atualização do jogo
+		double tickSegundo = 96; // Velocidade de atualização do jogo
 		
 		double delta = 0;
 		double timer = System.currentTimeMillis(); // Contador do tempo
@@ -120,7 +120,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 				delta--;
 			}
 			
-			if (System.currentTimeMillis()-agora >= 1000)
+			if (System.currentTimeMillis() - agora >= 1000)
 			{
 				timer += 1000; // Acrescenta 1s ao tempo atual
 			}
