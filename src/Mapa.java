@@ -48,6 +48,7 @@ public class Mapa
 					} else if (pixel == 0xFFFF0000) // Se for vermelho, é um inimigo
 					{
 						fantasmas.add(new Fantasma(x*32,y*32));
+						pastilhas.add(new Pastilha(x*32,y*32));
 						
 					} else if (pixel == 0x00FF00) // Se for verde, é um bônus
 					{
