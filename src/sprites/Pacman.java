@@ -1,3 +1,8 @@
+package sprites;
+
+import elementos.Jogador;
+import elementos.Mapa;
+import elementos.Malha;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;

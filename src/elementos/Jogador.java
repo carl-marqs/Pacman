@@ -1,5 +1,9 @@
+package elementos;
+
+import sprites.Pacman;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+
 
 public class Jogador extends Rectangle
 {

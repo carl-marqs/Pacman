@@ -1,11 +1,15 @@
+package elementos;
+
+import sprites.Ladrilho;
+import sprites.Pastilha;
+import sprites.Pacman;
+import sprites.Fantasma;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
-
 public class Mapa
 {
 	public int largura, altura;
