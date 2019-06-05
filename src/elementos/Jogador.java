@@ -1,6 +1,6 @@
 package elementos;
 
-import sprites.Pacman;
+import main.Pacman;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 

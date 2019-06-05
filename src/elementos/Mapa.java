@@ -2,7 +2,7 @@ package elementos;
 
 import sprites.Ladrilho;
 import sprites.Pastilha;
-import sprites.Pacman;
+import main.Pacman;
 import sprites.Fantasma;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

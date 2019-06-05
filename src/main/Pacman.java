@@ -1,4 +1,4 @@
-package sprites;
+package main;
 
 import elementos.Jogador;
 import elementos.Mapa;

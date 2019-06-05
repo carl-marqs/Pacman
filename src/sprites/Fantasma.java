@@ -1,6 +1,7 @@
 package sprites;
 
 
+import main.Pacman;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Random;
