@@ -6,6 +6,7 @@ import elementos.Malha;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,12 +20,15 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	
 	public static int LARGURA = 1184, ALTURA = 608; // Resolução do jogo
 	
-	private boolean estaRodando = false; // Armazena o estado do jogo
+	private boolean estaJOGANDO = false; // Armazena o estado do jogo
 	private Thread thread;
 	
 	public static Jogador jogador;
 	public static Mapa mapa; // Armazena em qual labirinto jogar
 	public static Malha malha;
+	
+	public static final int PAUSADO = 0, JOGANDO = 1;
+	public static int ESTADO = PAUSADO;
 	
 	public static void main(String[] args)
 	{
@@ -50,6 +54,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		setMaximumSize(resolucao); // Define a resolução máxima da janela
 		
 		addKeyListener(this);
+		
 		jogador = new Jogador((LARGURA/2)-16, (ALTURA/2)-16); // Insere o jogador no meio do mapa
 		mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
 		malha = new Malha("/assets/pacman_spritesheet.png"); // Usando a malha de sprites original
@@ -57,8 +62,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	
 	public synchronized void start()
 	{
-		if (estaRodando) return; // Se já estiver rodando, não fazer nada
-		estaRodando = true; // O jogo começou a ser executado nesse frame
+		if (estaJOGANDO) return; // Se já estiver JOGANDO, não fazer nada
+		estaJOGANDO = true; // O jogo começou a ser executado nesse frame
 		
 		thread = new Thread(this);
 		thread.start();
@@ -66,8 +71,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	
 	public synchronized void stop()
 	{
-		if (!estaRodando) return; // Se não está rodando, não fazer nada
-		estaRodando = false; // O jogo foi finalizado
+		if (!estaJOGANDO) return; // Se não está JOGANDO, não fazer nada
+		estaJOGANDO = false; // O jogo foi finalizado
 		
 		try { thread.join(); }
 		catch (InterruptedException e) { e.printStackTrace(); } 
@@ -76,8 +81,11 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	private void tick()
 	// Calcula toda a lógica do jogo
 	{
-		jogador.tick(); // Calcula a lógica do jogador
-		mapa.tick();
+		if (ESTADO == JOGANDO)
+		{
+			jogador.tick(); // Calcula a lógica do jogador
+			mapa.tick();
+		}
 	}
 	
 	private void render()
@@ -92,8 +100,31 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		Graphics graficos = buffer.getDrawGraphics();
 		graficos.setColor(Color.black); // Define a cor do fundo
 		graficos.fillRect(0, 0, LARGURA, ALTURA); // Retângulo no qual renderizar
-		jogador.render(graficos); // Renderizar o jogador também
-		mapa.render(graficos);
+		
+		if (ESTADO == JOGANDO)
+		// Se o jogo não está pausado, renderizar o jogador e o mapa
+		{
+			jogador.render(graficos); // Renderizar o jogador também
+			mapa.render(graficos);
+		
+		} else
+		// Se o jogo estiver pausado, exibir uma caixa de texto
+		{
+			// Variáveis da largura e altura e posições x e y da caixa de texto
+			int larguraCaixa = 640, alturaCaixa = 320;
+			int pos_x = (Pacman.LARGURA/2) - (larguraCaixa/2);
+			int pos_y = (Pacman.ALTURA/2) - (alturaCaixa/2);
+			
+			// Exibir a caixa de texto
+			graficos.setColor(Color.BLUE);
+			graficos.fillRect(pos_x, pos_y, larguraCaixa, alturaCaixa);
+			
+			// Exibir o texto
+			graficos.setColor(Color.WHITE);
+			graficos.setFont(new Font(Font.DIALOG, Font.BOLD, 32));
+			graficos.drawString("Pressione ENTER para começar!", Pacman.LARGURA/2 - 288, Pacman.ALTURA/2 + 8);
+		}
+		
 		graficos.dispose();
 		buffer.show();
 	}
@@ -102,32 +133,26 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void run()
 	// Game loop
 	{
-		double tickSegundo = 96; // Velocidade de atualização do jogo
+		double tickSegundo = 60; // Velocidade de atualização do jogo
 		
 		double delta = 0;
-		double timer = System.currentTimeMillis(); // Contador do tempo
 		long ultimoTempo = System.nanoTime(); // Tempo desde a última atualização
 		double intervalo = 1e9/tickSegundo;
 		
 		requestFocus(); // Ao iniciar o jogo, trazê-lo para primeiro plano
 		
-		while (estaRodando)
+		while (estaJOGANDO)
 		{
 			long agora = System.nanoTime(); // Armazena o tempo atual
 			delta += (agora-ultimoTempo)/intervalo; // Se o tempo atual for maior do que deveria ser, delta vai "compensar" esse valor
 			ultimoTempo = agora; // Já calculamos o tempo atual, portanto, é o último tempo calculado
-			
+	
 			while (delta >= 1)
-			// Mantém o jogo rodando à velocidade tickSegundo
+			// Mantém o jogo JOGANDO à velocidade tickSegundo
 			{
 				tick(); // Lógica do jogo
 				render();
 				delta--;
-			}
-			
-			if (System.currentTimeMillis() - agora >= 1000)
-			{
-				timer += 1000; // Acrescenta 1s ao tempo atual
 			}
 		}
 		
@@ -138,11 +163,18 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void keyPressed(KeyEvent tecla)
 	// Ao pressionar uma tecla...
 	{
-		// Se for uma tecla de movimentação, mover-se
-		if (tecla.getKeyCode() == KeyEvent.VK_UP) jogador.cima = true;
-		if (tecla.getKeyCode() == KeyEvent.VK_RIGHT) jogador.direita = true;
-		if (tecla.getKeyCode() == KeyEvent.VK_DOWN) jogador.baixo = true;
-		if (tecla.getKeyCode() == KeyEvent.VK_LEFT) jogador.esquerda = true;
+		if (ESTADO == JOGANDO) // Se o jogo não estiver pausado...
+		{
+			// Se for uma tecla de movimentação, mover-se
+			if (tecla.getKeyCode() == KeyEvent.VK_UP) jogador.cima = true;
+			if (tecla.getKeyCode() == KeyEvent.VK_RIGHT) jogador.direita = true;
+			if (tecla.getKeyCode() == KeyEvent.VK_DOWN) jogador.baixo = true;
+			if (tecla.getKeyCode() == KeyEvent.VK_LEFT) jogador.esquerda = true;
+		
+		} else
+		// Se estiver pausado, esperar o jogador pressionar enter para começá-lo
+			if (tecla.getKeyCode() == KeyEvent.VK_ENTER)
+				ESTADO = JOGANDO;
 	}
 
 	@Override
