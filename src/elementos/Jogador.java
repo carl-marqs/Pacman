@@ -11,7 +11,11 @@ public class Jogador extends Rectangle
 	public boolean cima, direita, baixo, esquerda;
 	public int velocidade = 1;
 	
-	private int tempo = 0, tempoAnimacao = 10;
+	public int vidas = 3;
+	public int pontuacao = 0;
+	
+	private int iInvencivel = -1, tempoInvencivel = 600; // 10 segundos (60fps * 10s)
+	private int iAnimacao = 0, tempoAnimacao = 10;
 	public int indiceAnimacao = 0;
 	private int direcao = 3;
 
@@ -41,28 +45,67 @@ public class Jogador extends Rectangle
 		{
 			y -= velocidade;
 			direcao = 0;
+			
+			// Checa se está fora do mapa e precisa teleportar
+			if (y <= -16)
+				y = Pacman.ALTURA-16;
 		}
 		if (direita && podeMover(x+velocidade,y))
 		{
 			x += velocidade;
 			direcao = 1;
+			
+			// Checa se está fora do mapa e precisa teleportar
+			if (x >= Pacman.LARGURA-16)
+				x = -16;
 		}
 		if (baixo && podeMover(x,y+velocidade))
 		{
 			y += velocidade;
 			direcao = 2;
+			
+			// Checa se está fora do mapa e precisa teleportar
+			if (y >= Pacman.ALTURA-16)
+				y = -16;
 		}
 		if (esquerda && podeMover(x-velocidade,y))
 		{
 			x -= velocidade;
 			direcao = 3;
+			
+			// Checa se está fora do mapa e precisa teleportar
+			if (x <= -16)
+				x = Pacman.LARGURA-16;
+		}
+		
+		// Invencivel
+		if (iInvencivel >= 0)
+		{
+			iInvencivel++;
+			
+			if (iInvencivel > tempoInvencivel)
+				iInvencivel = -1;
 		}
 		
 		for (int i=0; i < Pacman.mapa.pastilhas.size(); i++)
 		{
 			if (intersects(Pacman.mapa.pastilhas.get(i))) // Se colidir com uma pastilha...
 			{
+				// Incrementa a pontuação dependendo do tipo da pastilha
+				if (Pacman.mapa.pastilhas.get(i).especial == true)
+				{
+					pontuacao += 10;
+					iInvencivel = 0;
+				}
+				else
+					pontuacao += 1;
+				
+				// Checa se o jogador deve ganhar vida extra
+				if (pontuacao % 10000 == 0)
+					vidas += 1;
+				
 				Pacman.mapa.pastilhas.remove(i); // Deleta a pastilha
+				
 				break;
 			}
 		}
@@ -79,16 +122,30 @@ public class Jogador extends Rectangle
 		{
 			if (Pacman.mapa.fantasmas.get(i).intersects(this))
 			{
-				Pacman.ESTADO = Pacman.PAUSADO;
-				Pacman.jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
-				Pacman.mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+				if (vidas <= 0)
+				{
+					Pacman.ESTADO = Pacman.PAUSADO;
+					Pacman.jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
+					Pacman.mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+				
+				} else if (Pacman.mapa.fantasmas.get(i).modo != 3)
+				{
+					if (iInvencivel == -1) // Se não está invencível...
+						vidas --;
+					else
+						pontuacao += 100;
+					
+					Pacman.mapa.fantasmas.get(i).modo = 3;
+				}
+				
+				break;
 			}
 		}
 		
-		tempo++;
-		if (tempo >= tempoAnimacao)
+		iAnimacao++;
+		if (iAnimacao >= tempoAnimacao)
 		{
-			tempo = 0;
+			iAnimacao = 0;
 			indiceAnimacao++;
 		}
 	}

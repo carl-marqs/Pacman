@@ -102,10 +102,18 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		graficos.fillRect(0, 0, LARGURA, ALTURA); // Retângulo no qual renderizar
 		
 		if (ESTADO == JOGANDO)
-		// Se o jogo não está pausado, renderizar o jogador e o mapa
+		// Se o jogo não está pausado, renderizar o jogador, o mapa e o texto
 		{
 			jogador.render(graficos); // Renderizar o jogador também
 			mapa.render(graficos);
+			
+			// Exibir a pontuação
+			graficos.setColor(Color.WHITE);
+			graficos.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
+			graficos.drawString("Pontuação: " + Integer.toString(jogador.pontuacao), LARGURA - 256,24);
+			
+			// Exibir a quantidade de vida
+			graficos.drawString("Vidas: " + Integer.toString(jogador.vidas), 8,24);
 		
 		} else
 		// Se o jogo estiver pausado, exibir uma caixa de texto
@@ -121,8 +129,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			
 			// Exibir o texto
 			graficos.setColor(Color.WHITE);
-			graficos.setFont(new Font(Font.DIALOG, Font.BOLD, 32));
-			graficos.drawString("Pressione ENTER para começar!", Pacman.LARGURA/2 - 288, Pacman.ALTURA/2 + 8);
+			graficos.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
+			graficos.drawString("Pressione ENTER para começar!", Pacman.LARGURA/2 - 256, Pacman.ALTURA/2 + 8);
 		}
 		
 		graficos.dispose();

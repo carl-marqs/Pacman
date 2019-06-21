@@ -13,9 +13,9 @@ public class Fantasma extends Rectangle
 	public Random aleatorio;
 	
 	private int tempo=0;
-	private int velocidade = 1;
-	private int modo=0; // 0: aleatorio | 1: inteligente | 2: preso
-	private int ultimaDirecao=-1, direcao=0; // 0: cima | 1: direita | 2: baixo | 3: esquerda
+	protected int velocidade = 1;
+	public int modo=0; // 0: aleatorio | 1: inteligente | 2: preso | 3: morto
+	protected int direcao=0; // 0: cima | 1: direita | 2: baixo | 3: esquerda
 
 	public Fantasma(int x, int y)
 	{
@@ -25,7 +25,7 @@ public class Fantasma extends Rectangle
 		direcao = aleatorio.nextInt(4);
 	}
 	
-	private boolean podeMover(int x, int y)
+	protected boolean podeMover(int x, int y)
 	// Checamos se o próximo ladrilho está vazio para podermos mover
 	{
 		Rectangle colisao = new Rectangle(x,y, width,height); // Retângulo invisível à frente do fantasma, para checar a colisão
@@ -88,7 +88,7 @@ public class Fantasma extends Rectangle
 				{
 					y -= velocidade;
 					movendo = true;
-					ultimaDirecao = 0;
+					direcao = 0;
 				}
 			
 			if (x < Pacman.jogador.x)
@@ -96,7 +96,7 @@ public class Fantasma extends Rectangle
 				{
 					x += velocidade;
 					movendo = true;
-					ultimaDirecao = 1;
+					direcao = 1;
 				}
 			
 			if (y < Pacman.jogador.y)
@@ -104,7 +104,7 @@ public class Fantasma extends Rectangle
 				{
 					y += velocidade;
 					movendo = true;
-					ultimaDirecao = 2;
+					direcao = 2;
 				}
 			
 			if (x > Pacman.jogador.x)
@@ -112,7 +112,7 @@ public class Fantasma extends Rectangle
 				{
 					x -= velocidade;
 					movendo = true;
-					ultimaDirecao = 3;
+					direcao = 3;
 				}
 			
 			if (x == Pacman.jogador.x && y == Pacman.jogador.y)
@@ -130,7 +130,7 @@ public class Fantasma extends Rectangle
 		
 		} else if (modo == 2) // Está preso, precisa encontrar um caminho
 		{
-			if (ultimaDirecao == 0)
+			if (direcao == 0)
 			{
 				if (x < Pacman.jogador.x)
 				{
@@ -149,7 +149,7 @@ public class Fantasma extends Rectangle
 				if (podeMover(x,y-velocidade))
 					y -= velocidade; 
 				
-			} else if (ultimaDirecao == 1)
+			} else if (direcao == 1)
 			{
 				if (y < Pacman.jogador.y)
 				{
@@ -168,7 +168,7 @@ public class Fantasma extends Rectangle
 				if (podeMover(x+velocidade,y))
 					x += velocidade; 
 				
-			} else if (ultimaDirecao == 2)
+			} else if (direcao == 2)
 			{
 				if (x < Pacman.jogador.x)
 				{
@@ -187,7 +187,7 @@ public class Fantasma extends Rectangle
 				if (podeMover(x,y+velocidade))
 					y += velocidade; 
 				
-			} else if (ultimaDirecao == 3)
+			} else if (direcao == 3)
 			{
 				if (y < Pacman.jogador.y)
 				{
@@ -218,6 +218,13 @@ public class Fantasma extends Rectangle
 	
 	public void render(Graphics graficos)
 	{
-		graficos.drawImage(Pacman.malha.getSprite(2,64), x,y, width,height, null);
+		if (direcao == 0)
+			graficos.drawImage(Pacman.malha.getSprite(66,64), x,y, width,height, null);
+		else if (direcao == 1)
+			graficos.drawImage(Pacman.malha.getSprite(2,80), x,y, width,height, null);
+		else if (direcao == 2)
+			graficos.drawImage(Pacman.malha.getSprite(98,96), x,y, width,height, null);
+		else
+			graficos.drawImage(Pacman.malha.getSprite(34,112), x,y, width,height, null);
 	}
 }
