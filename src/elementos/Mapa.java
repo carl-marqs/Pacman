@@ -14,6 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import javax.imageio.ImageIO;
 public class Mapa
 {
@@ -21,6 +23,26 @@ public class Mapa
 	public Ladrilho[][] ladrilhos;
 	public List<Pastilha> pastilhas;
 	public List<Fantasma> fantasmas;
+	
+	public Mapa()
+	{
+		Random aleatorio = new Random();
+		
+		pastilhas = new ArrayList<>();
+		fantasmas = new ArrayList<>();
+		
+		largura = 37;
+		altura = 19;
+		
+		int[] pixels = new int[largura*altura];
+		ladrilhos = new Ladrilho[largura][altura];
+		
+		for(int contFantasma=0; contFantasma < 4; contFantasma++)
+		{
+			
+		}
+		
+	}
 	
 	public Mapa(String caminho)
 	{
