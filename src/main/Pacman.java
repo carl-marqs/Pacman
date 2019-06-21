@@ -98,7 +98,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		}
 		
 		Graphics graficos = buffer.getDrawGraphics();
-		graficos.setColor(Color.black); // Define a cor do fundo
+		graficos.setColor(Color.BLACK); // Define a cor do fundo
 		graficos.fillRect(0, 0, LARGURA, ALTURA); // Retângulo no qual renderizar
 		
 		if (ESTADO == JOGANDO)

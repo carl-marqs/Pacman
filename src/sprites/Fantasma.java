@@ -4,25 +4,24 @@ package sprites;
 import main.Pacman;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.util.Random;
 
-public class Fantasma extends Rectangle
+public abstract class Fantasma extends Rectangle
 {
 	private static final long serialVersionUID = 1L;
 	
-	public Random aleatorio;
-	
-	private int tempo=0;
-	protected int velocidade = 1;
-	public int modo=0; // 0: aleatorio | 1: inteligente | 2: preso | 3: morto
+	protected int velocidade=1;
 	protected int direcao=0; // 0: cima | 1: direita | 2: baixo | 3: esquerda
+	
+	protected int iAnimacao=0, tempoAnimacao=15;
+	protected int indiceAnimacao=0;
+	
+	protected int iMorto=0, tempoMorto=60*10;
+	
+	public boolean morto = false;
 
 	public Fantasma(int x, int y)
 	{
-		aleatorio = new Random();
-
 		setBounds(x,y, 32,32);
-		direcao = aleatorio.nextInt(4);
 	}
 	
 	protected boolean podeMover(int x, int y)
@@ -30,201 +29,73 @@ public class Fantasma extends Rectangle
 	{
 		Rectangle colisao = new Rectangle(x,y, width,height); // Retângulo invisível à frente do fantasma, para checar a colisão
 		
+		if (x < 0 || y < 0 || x > Pacman.LARGURA - 32 || y > Pacman.ALTURA - 32)
+			return false;
+		
 		for (int i=0; i < Pacman.mapa.ladrilhos.length; i++)
 			for (int j=0; j < Pacman.mapa.ladrilhos[0].length; j++)
 				if (Pacman.mapa.ladrilhos[i][j] != null)
 					if (colisao.intersects(Pacman.mapa.ladrilhos[i][j]))
-						return false; // Se colidir com algum dos ladrilhos do mapa, o fantasma não pode mover
+							return false; // Se colidir com algum dos ladrilhos do mapa, o fantasma não pode mover
 		
 		return true;
 	}
 	
 	public void tick()
 	{
-		if (modo == 0) // Se está no modo aleatório...
+		if (morto)
 		{
-			if (direcao == 0)
-			{
-				if (podeMover(x,y-velocidade)) // Se não encontrar obstáculos à sua frente, pode mover
-					y -= velocidade;
-				else
-					direcao = aleatorio.nextInt(4); // Se encontrar, ir pra outra direção aleatoriamente
-				
-			} else if (direcao == 1)
-			{
-				if (podeMover(x+velocidade,y))
-					x += velocidade;
-				else
-					direcao = aleatorio.nextInt(4);
-				
-			} else if (direcao == 2)
-			{
-				if (podeMover(x,y+velocidade))
-					y += velocidade;
-				else
-					direcao = aleatorio.nextInt(4);
-				
-			} else if (direcao == 3)
-			{
-				if (podeMover(x-velocidade,y))
-					x -= velocidade;
-				else
-					direcao = aleatorio.nextInt(4);
-			}
+			iMorto++;
 			
-			tempo++;
-			if (tempo >= 60*4)
-			{
-				modo = 1;
-				tempo = 0;
-			}
-			
-		} else if (modo == 1) // Se está no modo inteligente
-		{
-			boolean movendo = false;
-			
-			if (y > Pacman.jogador.y)
-				if (podeMover(x,y-velocidade))
-				{
-					y -= velocidade;
-					movendo = true;
-					direcao = 0;
-				}
-			
-			if (x < Pacman.jogador.x)
-				if (podeMover(x+velocidade,y))
-				{
-					x += velocidade;
-					movendo = true;
-					direcao = 1;
-				}
-			
-			if (y < Pacman.jogador.y)
-				if (podeMover(x,y+velocidade))
-				{
-					y += velocidade;
-					movendo = true;
-					direcao = 2;
-				}
-			
-			if (x > Pacman.jogador.x)
-				if (podeMover(x-velocidade,y))
-				{
-					x -= velocidade;
-					movendo = true;
-					direcao = 3;
-				}
-			
-			if (x == Pacman.jogador.x && y == Pacman.jogador.y)
-				movendo = true;
-			
-			if (!movendo)
-				modo = 2; // Não está movendo! Precisa encontrar um caminho.
-			
-			tempo++;
-			if (tempo >= 60*8)
-			{
-				modo = 0;
-				tempo = 0;
-			}
+			if (iMorto >= tempoMorto)
+				morto = false;
+		}
 		
-		} else if (modo == 2) // Está preso, precisa encontrar um caminho
+		iAnimacao++;
+		if (iAnimacao >= tempoAnimacao)
 		{
-			if (direcao == 0)
-			{
-				if (x < Pacman.jogador.x)
-				{
-					if (podeMover(x+velocidade, y))
-					{
-						x += velocidade;
-						modo = 1; // Encontramos o caminho!
-					}
-				
-				} else if (podeMover(x-velocidade, y))
-				{
-					x -= velocidade;
-					modo = 1; // Encontramos o caminho!
-				}
-				
-				if (podeMover(x,y-velocidade))
-					y -= velocidade; 
-				
-			} else if (direcao == 1)
-			{
-				if (y < Pacman.jogador.y)
-				{
-					if (podeMover(x, y+velocidade))
-					{
-						y += velocidade;
-						modo = 1; // Encontramos o caminho!
-					}
-				
-				} else if (podeMover(x, y-velocidade))
-				{
-					y -= velocidade;
-					modo = 1; // Encontramos o caminho!
-				}
-				
-				if (podeMover(x+velocidade,y))
-					x += velocidade; 
-				
-			} else if (direcao == 2)
-			{
-				if (x < Pacman.jogador.x)
-				{
-					if (podeMover(x+velocidade, y))
-					{
-						x += velocidade;
-						modo = 1; // Encontramos o caminho!
-					}
-				
-				} else if (podeMover(x-velocidade, y))
-				{
-					x -= velocidade;
-					modo = 1; // Encontramos o caminho!
-				}
-				
-				if (podeMover(x,y+velocidade))
-					y += velocidade; 
-				
-			} else if (direcao == 3)
-			{
-				if (y < Pacman.jogador.y)
-				{
-					if (podeMover(x, y+velocidade))
-					{
-						y += velocidade;
-						modo = 1; // Encontramos o caminho!
-					}
-				
-				} else if (podeMover(x, y-velocidade))
-				{
-					y -= velocidade;
-					modo = 1; // Encontramos o caminho!
-				}
-				
-				if (podeMover(x-velocidade,y))
-					x -= velocidade; 
-			}
-			
-			tempo++;
-			if (tempo >= 60*0.05)
-			{
-				modo = 0;
-				tempo = 0;
-			}
+			iAnimacao = 0;
+			indiceAnimacao++;
 		}
 	}
 	
-	public void render(Graphics graficos)
+	public abstract void render(Graphics graficos);
+	
+	public void render(Graphics graficos, int y_sprite)
 	{
-		if (direcao == 0)
-			graficos.drawImage(Pacman.malha.getSprite(66,64), x,y, width,height, null);
-		else if (direcao == 1)
-			graficos.drawImage(Pacman.malha.getSprite(2,80), x,y, width,height, null);
-		else if (direcao == 2)
-			graficos.drawImage(Pacman.malha.getSprite(98,96), x,y, width,height, null);
-		else
-			graficos.drawImage(Pacman.malha.getSprite(34,112), x,y, width,height, null);
+		if (!morto)
+		{
+			if (direcao == 0)
+				if (indiceAnimacao % 2 == 0)
+					graficos.drawImage(Pacman.malha.getSprite(66,y_sprite), x,y, width,height, null);
+				else
+					graficos.drawImage(Pacman.malha.getSprite(82,y_sprite), x,y, width,height, null);
+		
+			else if (direcao == 1)
+				if (indiceAnimacao % 2 == 0)
+					graficos.drawImage(Pacman.malha.getSprite(2,y_sprite), x,y, width,height, null);
+				else
+					graficos.drawImage(Pacman.malha.getSprite(18,y_sprite), x,y, width,height, null);
+				
+			else if (direcao == 2)
+				if (indiceAnimacao % 2 == 0)
+					graficos.drawImage(Pacman.malha.getSprite(98,y_sprite), x,y, width,height, null);
+				else
+					graficos.drawImage(Pacman.malha.getSprite(114,y_sprite), x,y, width,height, null);
+			else
+				if (indiceAnimacao % 2 == 0)
+					graficos.drawImage(Pacman.malha.getSprite(34,y_sprite), x,y, width,height, null);
+				else
+					graficos.drawImage(Pacman.malha.getSprite(50,y_sprite), x,y, width,height, null);
+		
+		} else
+			if (indiceAnimacao % 4 == 0)
+				graficos.drawImage(Pacman.malha.getSprite(130,64), x,y, width,height, null);
+			else if (indiceAnimacao % 4 == 1)
+				graficos.drawImage(Pacman.malha.getSprite(146,64), x,y, width,height, null);
+			else if (indiceAnimacao % 4 == 2)
+				graficos.drawImage(Pacman.malha.getSprite(162,64), x,y, width,height, null);
+			else
+				graficos.drawImage(Pacman.malha.getSprite(178,64), x,y, width,height, null);
 	}
 }

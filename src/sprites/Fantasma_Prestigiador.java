@@ -22,17 +22,26 @@ public class Fantasma_Prestigiador extends Fantasma
 	@Override
 	public void tick()
 	{
+		super.tick();
+		if (morto)
+			return;
+		
 		tempo++;
-		if (tempo >= 60*5) // 5 segundos
+		if (tempo >= 60*3) // 3 segundos
 		{
 			do
 			{
-				x = aleatorio.nextInt(Pacman.LARGURA/32) * 32;
-				y = aleatorio.nextInt(Pacman.ALTURA/32) * 32;
-				direcao = aleatorio.nextInt(4);
+				do
+					x = aleatorio.nextInt(Pacman.LARGURA/32) * 32;
+				while (Math.abs(Pacman.jogador.x - x) < 16 || Math.abs(Pacman.jogador.x - x) >= 192);
+				
+				do
+					y = aleatorio.nextInt(Pacman.ALTURA/32) * 32;
+				while (Math.abs(Pacman.jogador.y - y) < 16 || Math.abs(Pacman.jogador.y - y) >= 192);
 			
-			} while (Pacman.mapa.ladrilhos[x/32][y/32] != null && x != Pacman.jogador.x && y != Pacman.jogador.y); 
+			} while (Pacman.mapa.ladrilhos[x/32][y/32] != null); 
 			
+			direcao = aleatorio.nextInt(4);
 			tempo = 0;
 		}
 	}
@@ -40,13 +49,6 @@ public class Fantasma_Prestigiador extends Fantasma
 	@Override
 	public void render(Graphics graficos)
 	{
-		if (direcao == 0)
-			graficos.drawImage(Pacman.malha.getSprite(66,80), x,y, width,height, null);
-		else if (direcao == 1)
-			graficos.drawImage(Pacman.malha.getSprite(2,80), x,y, width,height, null);
-		else if (direcao == 2)
-			graficos.drawImage(Pacman.malha.getSprite(98,80), x,y, width,height, null);
-		else
-			graficos.drawImage(Pacman.malha.getSprite(34,80), x,y, width,height, null);
+		super.render(graficos, 80);
 	}
 }

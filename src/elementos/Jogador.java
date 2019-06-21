@@ -128,21 +128,21 @@ public class Jogador extends Rectangle
 					Pacman.jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
 					Pacman.mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
 				
-				} else if (Pacman.mapa.fantasmas.get(i).modo != 3)
+				} else if (!Pacman.mapa.fantasmas.get(i).morto)
 				{
 					if (iInvencivel == -1) // Se não está invencível...
 						vidas --;
 					else
 						pontuacao += 100;
 					
-					Pacman.mapa.fantasmas.get(i).modo = 3;
+					Pacman.mapa.fantasmas.get(i).morto = true;
 				}
-				
-				break;
 			}
 		}
 		
 		iAnimacao++;
+		if (iInvencivel != -1)
+			iAnimacao++;	
 		if (iAnimacao >= tempoAnimacao)
 		{
 			iAnimacao = 0;
@@ -161,6 +161,6 @@ public class Jogador extends Rectangle
 		else
 			Pacman.malha.rotacionar(direcao);
 		
-		graficos.drawImage(Malha.animacao[indiceAnimacao%2], x,y, width,height, null);
+		graficos.drawImage(Malha.jogador[indiceAnimacao%2], x,y, width,height, null);
 	}
 }

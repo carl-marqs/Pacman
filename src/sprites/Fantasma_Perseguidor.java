@@ -1,6 +1,7 @@
 package sprites;
 
 import java.awt.Graphics;
+import java.util.Random;
 
 import main.Pacman;
 
@@ -8,8 +9,10 @@ public class Fantasma_Perseguidor extends Fantasma
 {
 	private static final long serialVersionUID = 1L;
 	
-	private int modo=0;
+	private int modo=1; // 0: aleatorio | 1: inteligente | 2: preso
 	private int tempo=0;
+
+	private Random aleatorio = new Random();
 
 	public Fantasma_Perseguidor(int x, int y)
 	{
@@ -19,7 +22,49 @@ public class Fantasma_Perseguidor extends Fantasma
 	@Override
 	public void tick()
 	{
-		if (modo == 0) // Se está no modo inteligente
+		super.tick();
+		if (morto)
+			return;
+		
+		if (modo == 0) // Se está no modo aleatório...
+		{
+			if (direcao == 0)
+			{
+				if (podeMover(x,y-velocidade)) // Se não encontrar obstáculos à sua frente, pode mover
+					y -= velocidade;
+				else
+					direcao = aleatorio.nextInt(4); // Se encontrar, ir pra outra direção aleatoriamente
+				
+			} else if (direcao == 1)
+			{
+				if (podeMover(x+velocidade,y))
+					x += velocidade;
+				else
+					direcao = aleatorio.nextInt(4);
+				
+			} else if (direcao == 2)
+			{
+				if (podeMover(x,y+velocidade))
+					y += velocidade;
+				else
+					direcao = aleatorio.nextInt(4);
+				
+			} else if (direcao == 3)
+			{
+				if (podeMover(x-velocidade,y))
+					x -= velocidade;
+				else
+					direcao = aleatorio.nextInt(4);
+			}
+			
+			tempo++;
+			if (tempo >= 60*2)
+			{
+				modo = 1;
+				tempo = 0;
+			}
+			
+		} else if (modo == 1) // Se está no modo inteligente
 		{
 			boolean movendo = false;
 			
@@ -59,16 +104,16 @@ public class Fantasma_Perseguidor extends Fantasma
 				movendo = true;
 			
 			if (!movendo)
-				modo = 1; // Não está movendo! Precisa encontrar um caminho.
+				modo = 2; // Não está movendo! Precisa encontrar um caminho.
 			
 			tempo++;
-			if (tempo >= 60*8)
+			if (tempo >= 60*12)
 			{
 				modo = 0;
 				tempo = 0;
 			}
 		
-		} else if (modo == 1) // Está preso, precisa encontrar um caminho
+		} else if (modo == 2) // Está preso, precisa encontrar um caminho
 		{
 			if (direcao == 0)
 			{
@@ -77,13 +122,13 @@ public class Fantasma_Perseguidor extends Fantasma
 					if (podeMover(x+velocidade, y))
 					{
 						x += velocidade;
-						modo = 0; // Encontramos o caminho!
+						modo = 1; // Encontramos o caminho!
 					}
 				
 				} else if (podeMover(x-velocidade, y))
 				{
 					x -= velocidade;
-					modo = 0; // Encontramos o caminho!
+					modo = 1; // Encontramos o caminho!
 				}
 				
 				if (podeMover(x,y-velocidade))
@@ -96,13 +141,13 @@ public class Fantasma_Perseguidor extends Fantasma
 					if (podeMover(x, y+velocidade))
 					{
 						y += velocidade;
-						modo = 0; // Encontramos o caminho!
+						modo = 1; // Encontramos o caminho!
 					}
 				
 				} else if (podeMover(x, y-velocidade))
 				{
 					y -= velocidade;
-					modo = 0; // Encontramos o caminho!
+					modo = 1; // Encontramos o caminho!
 				}
 				
 				if (podeMover(x+velocidade,y))
@@ -115,13 +160,13 @@ public class Fantasma_Perseguidor extends Fantasma
 					if (podeMover(x+velocidade, y))
 					{
 						x += velocidade;
-						modo = 0; // Encontramos o caminho!
+						modo = 1; // Encontramos o caminho!
 					}
 				
 				} else if (podeMover(x-velocidade, y))
 				{
 					x -= velocidade;
-					modo = 0; // Encontramos o caminho!
+					modo = 1; // Encontramos o caminho!
 				}
 				
 				if (podeMover(x,y+velocidade))
@@ -134,13 +179,13 @@ public class Fantasma_Perseguidor extends Fantasma
 					if (podeMover(x, y+velocidade))
 					{
 						y += velocidade;
-						modo = 0; // Encontramos o caminho!
+						modo = 1; // Encontramos o caminho!
 					}
 				
 				} else if (podeMover(x, y-velocidade))
 				{
 					y -= velocidade;
-					modo = 0; // Encontramos o caminho!
+					modo = 1; // Encontramos o caminho!
 				}
 				
 				if (podeMover(x-velocidade,y))
@@ -159,14 +204,7 @@ public class Fantasma_Perseguidor extends Fantasma
 	@Override
 	public void render(Graphics graficos)
 	{
-		if (direcao == 0)
-			graficos.drawImage(Pacman.malha.getSprite(66,64), x,y, width,height, null);
-		else if (direcao == 1)
-			graficos.drawImage(Pacman.malha.getSprite(2,64), x,y, width,height, null);
-		else if (direcao == 2)
-			graficos.drawImage(Pacman.malha.getSprite(98,64), x,y, width,height, null);
-		else
-			graficos.drawImage(Pacman.malha.getSprite(34,64), x,y, width,height, null);
+		super.render(graficos, 64);
 	}
 
 }
