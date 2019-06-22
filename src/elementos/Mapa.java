@@ -4,11 +4,18 @@ import sprites.Ladrilho;
 import sprites.Pastilha;
 import main.Pacman;
 import sprites.Fantasma;
+import sprites.Fantasma_Aleatorio;
+import sprites.Fantasma_Evasivo;
+import sprites.Fantasma_Perseguidor;
+import sprites.Fantasma_Prestigiador;
+
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 import javax.imageio.ImageIO;
 public class Mapa
 {
@@ -16,6 +23,26 @@ public class Mapa
 	public Ladrilho[][] ladrilhos;
 	public List<Pastilha> pastilhas;
 	public List<Fantasma> fantasmas;
+	
+	public Mapa()
+	{
+		Random aleatorio = new Random();
+		
+		pastilhas = new ArrayList<>();
+		fantasmas = new ArrayList<>();
+		
+		largura = 37;
+		altura = 19;
+		
+		int[] pixels = new int[largura*altura];
+		ladrilhos = new Ladrilho[largura][altura];
+		
+		for(int contFantasma=0; contFantasma < 4; contFantasma++)
+		{
+			
+		}
+		
+	}
 	
 	public Mapa(String caminho)
 	{
@@ -31,6 +58,8 @@ public class Mapa
 			
 			ladrilhos = new Ladrilho[largura][altura]; // Inicializa o vetor com as dimensões da imagem
 			mapa.getRGB(0,0, largura,altura, pixels, 0, largura); // Pega a cor de cada pixel
+			
+			int contFantasma=0;
 			
 			// Ler cada elemento do vetor pixels
 			for (int x=0; x < largura; x++)
@@ -51,15 +80,26 @@ public class Mapa
 					
 					} else if (pixel == 0xFFFF0000) // Se for vermelho, é um inimigo
 					{
-						fantasmas.add(new Fantasma(x*32,y*32));
-						pastilhas.add(new Pastilha(x*32,y*32));
+						pastilhas.add(new Pastilha(x*32,y*32, false));
 						
-					} else if (pixel == 0x00FF00) // Se for verde, é um bônus
-					{
+						if (contFantasma == 0)
+							fantasmas.add(new Fantasma_Aleatorio(x*32,y*32));
+						else if (contFantasma == 1)
+							fantasmas.add(new Fantasma_Perseguidor(x*32,y*32));
+						else if (contFantasma == 2)
+							fantasmas.add(new Fantasma_Evasivo(x*32,y*32));
+						else
+							fantasmas.add(new Fantasma_Prestigiador(x*32,y*32));
 						
-					} else // Se não, é uma pastilha
+						contFantasma++;
+						
+					} else if (pixel == 0xFF00FF00) // Se for verde, é uma pastilha especial
 					{
-						pastilhas.add(new Pastilha(x*32,y*32));
+						pastilhas.add(new Pastilha(x*32,y*32, true));
+						
+					} else // Se não, é uma pastilha comum
+					{
+						pastilhas.add(new Pastilha(x*32,y*32, false));
 					}
 				}
 			}

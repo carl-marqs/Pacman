@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 
 public class Malha
 {
-	public static BufferedImage[] animacao;
+	public static BufferedImage[] jogador;
 	public BufferedImage malha;
 	
 	public Malha(String caminho)
@@ -18,32 +18,32 @@ public class Malha
 			
 		} catch (IOException e) { e.printStackTrace(); }
 		
-		animacao = new BufferedImage[2];
-		animacao[0] = getSprite(0,0);
-		animacao[1] = getSprite(16,0);
+		jogador = new BufferedImage[2];
+		jogador[0] = getSprite(0,0);
+		jogador[1] = getSprite(16,0);
 	}
 	
 	public void rotacionar(int direcao)
 	{
 		if (direcao == 0)
 		{
-			animacao[0] = getSprite(2,32);
-			animacao[1] = getSprite(18,32);
+			jogador[0] = getSprite(2,32);
+			jogador[1] = getSprite(18,32);
 			
 		} else if (direcao == 1)
 		{
-			animacao[0] = getSprite(0,0);
-			animacao[1] = getSprite(16,0);
+			jogador[0] = getSprite(0,0);
+			jogador[1] = getSprite(16,0);
 			
 		} else if (direcao == 2)
 		{
-			animacao[0] = getSprite(2,48);
-			animacao[1] = getSprite(18,48);
+			jogador[0] = getSprite(2,48);
+			jogador[1] = getSprite(18,48);
 			
 		} else
 		{
-			animacao[0] = getSprite(2,16);
-			animacao[1] = getSprite(18,16);
+			jogador[0] = getSprite(2,16);
+			jogador[1] = getSprite(18,16);
 		}
 	}
 	
