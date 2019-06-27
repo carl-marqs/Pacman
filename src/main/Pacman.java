@@ -53,11 +53,10 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		setMinimumSize(resolucao); // Define a resolução mínima da janela
 		setMaximumSize(resolucao); // Define a resolução máxima da janela
 		
-		addKeyListener(this);
-		
 		jogador = new Jogador((LARGURA/2)-16, (ALTURA/2)-16); // Insere o jogador no meio do mapa
-		mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
 		malha = new Malha("/assets/pacman_spritesheet.png"); // Usando a malha de sprites original
+		
+		addKeyListener(this);
 	}
 	
 	public synchronized void start()
@@ -128,9 +127,14 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			graficos.fillRect(pos_x, pos_y, larguraCaixa, alturaCaixa);
 			
 			// Exibir o texto
+			graficos.setColor(Color.YELLOW);
+			graficos.setFont(new Font(Font.DIALOG, Font.BOLD, 48));
+			graficos.drawString("Pacman 322", Pacman.LARGURA/2 - 160, Pacman.ALTURA/2 - 64);
+			
 			graficos.setColor(Color.WHITE);
-			graficos.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
-			graficos.drawString("Pressione ENTER para começar!", Pacman.LARGURA/2 - 256, Pacman.ALTURA/2 + 8);
+			graficos.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+			graficos.drawString("Aperte ENTER para o mapa oficial", Pacman.LARGURA/2 - 280, Pacman.ALTURA/2 - 8);
+			graficos.drawString("Aperte ESPAÇO para mapa aleatório", Pacman.LARGURA/2 - 296, Pacman.ALTURA/2 + 16);
 		}
 		
 		graficos.dispose();
@@ -181,8 +185,18 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		
 		} else
 		// Se estiver pausado, esperar o jogador pressionar enter para começá-lo
+		{			
 			if (tecla.getKeyCode() == KeyEvent.VK_ENTER)
+			{
+				mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
 				ESTADO = JOGANDO;
+			}
+			else if (tecla.getKeyCode() == KeyEvent.VK_SPACE)
+			{
+				mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+				ESTADO = JOGANDO;
+			}
+		}
 	}
 
 	@Override
