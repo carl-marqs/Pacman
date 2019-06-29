@@ -130,7 +130,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			// Exibir o texto
 			graficos.setColor(Color.WHITE);
 			graficos.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
-			graficos.drawString("Pressione ENTER para começar!", Pacman.LARGURA/2 - 256, Pacman.ALTURA/2 + 8);
+			graficos.drawString("Pressione ENTER para começar!", Pacman.LARGURA/2 - 280, Pacman.ALTURA/2 + 8);
 		}
 		
 		graficos.dispose();
@@ -141,7 +141,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	public void run()
 	// Game loop
 	{
-		double tickSegundo = 60; // Velocidade de atualização do jogo
+		double tickSegundo = 90; // Velocidade de atualização do jogo
 		
 		double delta = 0;
 		long ultimoTempo = System.nanoTime(); // Tempo desde a última atualização
