@@ -23,7 +23,7 @@ public class Malha
 		jogador[1] = getSprite(16,0);
 	}
 	
-	public void rotacionar(int direcao)
+	public void girarJogador(int direcao)
 	{
 		if (direcao == 0)
 		{

@@ -16,10 +16,8 @@ import java.io.FileInputStream;
 
 import javax.swing.JFrame;
 
-import sun.audio.AudioData;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
-import sun.audio.ContinuousAudioDataStream;
 
 public class Pacman extends Canvas implements Runnable, KeyListener
 {
@@ -91,7 +89,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 	{
 		if (ESTADO == JOGANDO)
 		{
-			jogador.tick(); // Calcula a lógica do jogador
+			jogador.atualizar(); // Calcula a lógica do jogador
 			mapa.tick();
 		}
 	}
@@ -112,7 +110,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		if (ESTADO == JOGANDO)
 		// Se o jogo não está pausado, renderizar o jogador, o mapa e o texto
 		{
-			jogador.render(graficos); // Renderizar o jogador também
+			jogador.renderizar(graficos); // Renderizar o jogador também
 			mapa.render(graficos);
 			
 			// Exibir a pontuação
@@ -233,5 +231,10 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		{
 			System.out.println(e.getMessage());
 		}
+	}
+	
+	public static void pausar()
+	{
+		ESTADO = PAUSADO;
 	}
 }

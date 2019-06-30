@@ -8,20 +8,53 @@ public class Jogador extends Rectangle
 {
 	private static final long serialVersionUID = 1L;
 	
-	public boolean cima, direita, baixo, esquerda;
-	public int velocidade = 1;
+	/* Movimentação */
+	public boolean cima, direita, baixo, esquerda; // direções para qual o jogador quer se mover
+	private int velocidade = 1; // o jogador anda 60 pixels a cada segundo (60fps * 1 pixel/segundo)
 	
-	public int vidas = 3;
-	public int pontuacao = 0;
+	/* Vida e pontuação */
+	public int vidas = 3; // valor inicial
+	public int pontuacao = 0; // valor inicial
 	
-	private int iInvencivel = -1, tempoInvencivel = 600; // 10 segundos (60fps * 10s)
-	private int iAnimacao = 0, tempoAnimacao = 10;
-	public int indiceAnimacao = 0;
-	private int direcao = 3;
+	/* Invencibilidade */
+	private int iInvencivel = -1; // contará a quanto tempo está invencível
+	private int tempoInvencivel = 600; // 10 segundos (60fps * 10s)
+	
+	/* Animação da sprite */
+	private int direcao = 3; // direção que está se movendo
+	private int iAnimacao = 0; // contará quanto tempo está invencível
+	private int tempoAnimacao = 10;
+	public int indiceAnimacao = 0; // qual sprite da animação deve exibir
 
 	public Jogador(int x, int y)
 	{
 		setBounds(x,y, 32,32); // Definir tamanho e posição do retângulo
+	}
+	
+	public void atualizar()
+	{
+		// Se estiver com menos de 0 vidas, encerrar o jogo
+		if (vidas <= 0)
+			Pacman.pausar();
+		
+		// Rotina do jogador
+		andar();
+		comer();
+		mexer();
+		
+		// Se estiver invencível, checar se deve voltar ao normal
+		if (iInvencivel >= 0)
+		{
+			iInvencivel++;
+			
+			if (iInvencivel > tempoInvencivel)
+				iInvencivel = -1;
+		}
+	}
+	
+	public void renderizar(Graphics graficos)
+	{	
+		graficos.drawImage(Malha.jogador[indiceAnimacao%2], x,y, width,height, null);
 	}
 	
 	private boolean podeMover(int x, int y)
@@ -30,17 +63,17 @@ public class Jogador extends Rectangle
 		Rectangle colisao = new Rectangle(x,y, width,height); // Retângulo invisível à frente do player, para checar a colisão
 		
 		for (int i=0; i < Pacman.mapa.ladrilhos.length; i++)
-			for (int j=0; j < Pacman.mapa.ladrilhos[0].length; j++)
-				if (Pacman.mapa.ladrilhos[i][j] != null)
-					if (colisao.intersects(Pacman.mapa.ladrilhos[i][j]))
-						return false; // Se colidir com algum dos ladrilhos do mapa, o player não pode mover
+			for (int j=0; j < Pacman.mapa.ladrilhos[0].length; j++) // verifica cada posição do mapa...
+				if (Pacman.mapa.ladrilhos[i][j] != null) // se possuir um ladrilho nessa posição...
+					if (colisao.intersects(Pacman.mapa.ladrilhos[i][j])) // e se estiver colidindo com ele...
+						return false; // não pode mover
 		
 		return true;
 	}
 	
-	public void tick()
+	private void andar()
 	{
-		// Movimentação do jogador
+		// Checar para qual direção o jogador deve se deslocar
 		if (cima && podeMover(x,y-velocidade))
 		{
 			y -= velocidade;
@@ -78,65 +111,14 @@ public class Jogador extends Rectangle
 				x = Pacman.LARGURA-16;
 		}
 		
-		// Invencivel
-		if (iInvencivel >= 0)
-		{
-			iInvencivel++;
-			
-			if (iInvencivel > tempoInvencivel)
-				iInvencivel = -1;
-		}
-		
-		for (int i=0; i < Pacman.mapa.pastilhas.size(); i++)
-		{
-			if (intersects(Pacman.mapa.pastilhas.get(i))) // Se colidir com uma pastilha...
+		// Verifica se está colidindo com um fantasma
+		for (int i=0; i < Pacman.mapa.fantasmas.size(); i++) // selecionar cada fantasma...
+			if (Pacman.mapa.fantasmas.get(i).intersects(this)) // se estiverem colidindo...
 			{
-				// Incrementa a pontuação dependendo do tipo da pastilha
-				if (Pacman.mapa.pastilhas.get(i).especial == true)
-				{
-					pontuacao += 10;
-					iInvencivel = 0;
-					Pacman.tocarMusica("res/sons/pacman_eatfruit.wav");
-				}
-				else
-				{
-					pontuacao += 1;
-					Pacman.tocarMusica("res/sons/pacman_chomp.wav");
-				}
-				
-				// Checa se o jogador deve ganhar vida extra
-				if (pontuacao % 10000 == 0)
-				{
-					vidas += 1;
-					Pacman.tocarMusica("res/sons/pacman_extrapac.wav");
-				}
-				
-				Pacman.mapa.pastilhas.remove(i); // Deleta a pastilha
-				
-				break;
-			}
-		}
-		
-		if (Pacman.mapa.pastilhas.size() == 0) // Se o jogador comer todas as pastilhas, é vencedor
-		{
-			Pacman.ESTADO = Pacman.PAUSADO;
-			Pacman.jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
-			Pacman.mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
-			Pacman.tocarMusica("res/sons/pacman_beginning.wav");
-			return;
-		}
-		
-		for (int i=0; i < Pacman.mapa.fantasmas.size(); i++)
-		{
-			if (Pacman.mapa.fantasmas.get(i).intersects(this))
-			{
-				if (vidas <= 0)
-				{
-					Pacman.ESTADO = Pacman.PAUSADO;
-					Pacman.jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
-					Pacman.mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
-				
-				} else if (!Pacman.mapa.fantasmas.get(i).morto)
+				if (vidas <= 0) // se
+					Pacman.pausar();
+					
+				else if (!Pacman.mapa.fantasmas.get(i).morto)
 				{
 					if (iInvencivel == -1) // Se não está invencível...
 					{
@@ -145,18 +127,59 @@ public class Jogador extends Rectangle
 					
 					} else
 					{
-						pontuacao += 100;
+						ganharPontos(100);
 						Pacman.tocarMusica("res/sons/pacman_eatghost.wav");
 					}
 					
 					Pacman.mapa.fantasmas.get(i).morto = true;
 				}
-			}
 		}
 		
-		iAnimacao++;
-		if (iInvencivel != -1)
-			iAnimacao++;	
+		// Rotacionar sprite para a direção que está andando
+		Pacman.malha.girarJogador(direcao);
+	}
+	
+	private void comer()
+	{
+		for (int i=0; i < Pacman.mapa.pastilhas.size(); i++)
+			if (intersects(Pacman.mapa.pastilhas.get(i))) // Se colidir com uma pastilha...
+			{
+				// Incrementar a pontuação dependendo do tipo da pastilha
+				if (Pacman.mapa.pastilhas.get(i).especial == true)
+				{
+					ganharPontos(10);
+					iInvencivel = 0; // entrar no modo invencível
+					Pacman.tocarMusica("res/sons/pacman_eatfruit.wav");
+				}
+				else
+				{
+					ganharPontos(1);
+					Pacman.tocarMusica("res/sons/pacman_chomp.wav");
+				}
+				
+				Pacman.mapa.pastilhas.remove(i); // Tira a pastilha do mapa
+				
+				break;
+			}
+		
+		if (Pacman.mapa.pastilhas.size() == 0) // Se o jogador comer todas as pastilhas, é vencedor
+		{
+			Pacman.pausar();
+			Pacman.tocarMusica("res/sons/pacman_beginning.wav");
+			return;
+		}
+	}
+	
+	private void mexer()
+	// Mudar a imagem da animação do sprite
+	{
+		// A sprite ficará acelerada se estiver invencível
+		if (iInvencivel == -1) // se não estiver invencível...
+			iAnimacao++;
+		else
+			iAnimacao += 2;
+		
+		// Se tiver sido exibida tempo suficiente, mudar para a próxima imagem
 		if (iAnimacao >= tempoAnimacao)
 		{
 			iAnimacao = 0;
@@ -164,17 +187,15 @@ public class Jogador extends Rectangle
 		}
 	}
 	
-	public void render(Graphics graficos)
+	private void ganharPontos(int pontos)
 	{
-		if (direcao == 0) // cima
-			Pacman.malha.rotacionar(direcao);
-		else if (direcao == 1) // direita
-			Pacman.malha.rotacionar(direcao);
-		else if (direcao == 2) //baixo
-			Pacman.malha.rotacionar(direcao);
-		else
-			Pacman.malha.rotacionar(direcao);
+		pontuacao += pontos;
 		
-		graficos.drawImage(Malha.jogador[indiceAnimacao%2], x,y, width,height, null);
+		// Checa se o jogador deve ganhar vida extra
+		if (pontuacao % 10000 == 0)
+		{
+			vidas += 1;
+			Pacman.tocarMusica("res/sons/pacman_extrapac.wav");
+		}
 	}
 }
