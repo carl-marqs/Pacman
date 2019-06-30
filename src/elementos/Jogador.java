@@ -96,13 +96,20 @@ public class Jogador extends Rectangle
 				{
 					pontuacao += 10;
 					iInvencivel = 0;
+					Pacman.tocarMusica("res/sons/pacman_eatfruit.wav");
 				}
 				else
+				{
 					pontuacao += 1;
+					Pacman.tocarMusica("res/sons/pacman_chomp.wav");
+				}
 				
 				// Checa se o jogador deve ganhar vida extra
 				if (pontuacao % 10000 == 0)
+				{
 					vidas += 1;
+					Pacman.tocarMusica("res/sons/pacman_death.wav");
+				}
 				
 				Pacman.mapa.pastilhas.remove(i); // Deleta a pastilha
 				
@@ -131,9 +138,15 @@ public class Jogador extends Rectangle
 				} else if (!Pacman.mapa.fantasmas.get(i).morto)
 				{
 					if (iInvencivel == -1) // Se não está invencível...
+					{
 						vidas --;
-					else
+						Pacman.tocarMusica("res/sons/pacman_death.wav");
+					
+					} else
+					{
 						pontuacao += 100;
+						Pacman.tocarMusica("res/sons/pacman_eatghost.wav");
+					}
 					
 					Pacman.mapa.fantasmas.get(i).morto = true;
 				}

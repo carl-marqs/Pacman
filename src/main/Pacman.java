@@ -11,8 +11,15 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.FileInputStream;
 
 import javax.swing.JFrame;
+
+import sun.audio.AudioData;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+import sun.audio.ContinuousAudioDataStream;
 
 public class Pacman extends Canvas implements Runnable, KeyListener
 {
@@ -55,6 +62,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		
 		jogador = new Jogador((LARGURA/2)-16, (ALTURA/2)-16); // Insere o jogador no meio do mapa
 		malha = new Malha("/assets/pacman_spritesheet.png"); // Usando a malha de sprites original
+		
+		tocarMusica("res/sons/pacman_beginning.wav");
 		
 		addKeyListener(this);
 	}
@@ -185,7 +194,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		
 		} else
 		// Se estiver pausado, esperar o jogador pressionar enter para começá-lo
-		{			
+		{
 			if (tecla.getKeyCode() == KeyEvent.VK_ENTER)
 			{
 				mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
@@ -212,4 +221,17 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 
 	@Override
 	public void keyTyped(KeyEvent tecla) {}
+	
+	public static void tocarMusica(String caminho)
+	{
+		try
+		{
+			AudioStream musica = new AudioStream(new FileInputStream(new File(caminho)));
+			AudioPlayer.player.start(musica);
+		
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+	}
 }
