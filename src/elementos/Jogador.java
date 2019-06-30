@@ -108,7 +108,7 @@ public class Jogador extends Rectangle
 				if (pontuacao % 10000 == 0)
 				{
 					vidas += 1;
-					Pacman.tocarMusica("res/sons/pacman_death.wav");
+					Pacman.tocarMusica("res/sons/pacman_extrapac.wav");
 				}
 				
 				Pacman.mapa.pastilhas.remove(i); // Deleta a pastilha
@@ -122,6 +122,7 @@ public class Jogador extends Rectangle
 			Pacman.ESTADO = Pacman.PAUSADO;
 			Pacman.jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
 			Pacman.mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+			Pacman.tocarMusica("res/sons/pacman_beginning.wav");
 			return;
 		}
 		
