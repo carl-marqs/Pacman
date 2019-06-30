@@ -9,9 +9,8 @@ public class Ladrilho extends Rectangle
 	private static final long serialVersionUID = 1L;
 
 	public Ladrilho(int x, int y)
-	{
-		setBounds(x,y, 32,32); // Define o tamanho e posição do retângulo
-	}
+	// Criar novo quadrado 32x32px a partir de uma posição
+	{ setBounds(x,y, 32,32); }
 	
 	public void render(Graphics graficos)
 	{

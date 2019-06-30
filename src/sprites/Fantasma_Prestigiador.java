@@ -10,24 +10,21 @@ public class Fantasma_Prestigiador extends Fantasma
 	private static final long serialVersionUID = 1L;
 	
 	private int tempo=0;
-	private Random aleatorio;
+	private Random aleatorio= new Random();
 
 	public Fantasma_Prestigiador(int x, int y)
-	{
-		super(x,y);
-		
-		aleatorio = new Random();
-	}
+	{ super(x,y); }
 	
 	@Override
 	public void atualizar()
+	// Calcula o comportamento do fantasma
 	{
 		super.atualizar();
-		if (morto)
-			return;
+		if (morto) return; // se está morto, não se mexer
 		
+		// A cada 3 segundos, escolher uma nova posição aleatória próxima, mas não muito, do jogador
 		tempo++;
-		if (tempo >= 60*3) // 3 segundos
+		if (tempo >= 60*3) // (60fps * 3s)
 		{
 			do
 			{
@@ -48,7 +45,6 @@ public class Fantasma_Prestigiador extends Fantasma
 	
 	@Override
 	public void render(Graphics graficos)
-	{
-		super.render(graficos, 80);
-	}
+	// Diz qual o índice do seu sprite para a classe pai renderizar
+	{ super.render(graficos, 80); }
 }
