@@ -16,9 +16,9 @@ public class Fantasma_Aleatorio extends Fantasma
 	}
 	
 	@Override
-	public void tick()
+	public void atualizar()
 	{
-		super.tick();
+		super.atualizar();
 		if (morto)
 			return;
 		

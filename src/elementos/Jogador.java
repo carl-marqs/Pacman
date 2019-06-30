@@ -8,30 +8,30 @@ public class Jogador extends Rectangle
 {
 	private static final long serialVersionUID = 1L;
 	
-	/* Movimentação */
+	// Movimentação
 	public boolean cima, direita, baixo, esquerda; // direções para qual o jogador quer se mover
 	private int velocidade = 1; // o jogador anda 60 pixels a cada segundo (60fps * 1 pixel/segundo)
 	
-	/* Vida e pontuação */
+	// Vida e pontuação
 	public int vidas = 3; // valor inicial
 	public int pontuacao = 0; // valor inicial
 	
-	/* Invencibilidade */
+	// Invencibilidade
 	private int iInvencivel = -1; // contará a quanto tempo está invencível
 	private int tempoInvencivel = 600; // 10 segundos (60fps * 10s)
 	
-	/* Animação da sprite */
+	// Animação da sprite
 	private int direcao = 3; // direção que está se movendo
 	private int iAnimacao = 0; // contará quanto tempo está invencível
 	private int tempoAnimacao = 10;
 	public int indiceAnimacao = 0; // qual sprite da animação deve exibir
 
 	public Jogador(int x, int y)
-	{
-		setBounds(x,y, 32,32); // Definir tamanho e posição do retângulo
-	}
+	// Criar novo quadrado 32x32px a partir de uma posição
+	{ setBounds(x,y, 32,32); }
 	
 	public void atualizar()
+	// Calcula a lógica do jogador
 	{
 		// Se estiver com menos de 0 vidas, encerrar o jogo
 		if (vidas <= 0)
