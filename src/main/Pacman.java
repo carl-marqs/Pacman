@@ -193,7 +193,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			}
 			else if (tecla.getKeyCode() == KeyEvent.VK_SPACE)
 			{
-				mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+				mapa = new Mapa(); // Começar com um mapa gerado a partir de um arquivo
 				ESTADO = JOGANDO;
 			}
 		}

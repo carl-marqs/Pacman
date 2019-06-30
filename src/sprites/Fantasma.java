@@ -48,7 +48,10 @@ public abstract class Fantasma extends Rectangle
 			iMorto++;
 			
 			if (iMorto >= tempoMorto)
+			{
 				morto = false;
+				iMorto = 0; /*Retorna ao tempo inicial de animação*/
+			}
 		}
 		
 		iAnimacao++;

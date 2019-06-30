@@ -34,13 +34,81 @@ public class Mapa
 		largura = 37;
 		altura = 19;
 		
-		int[] pixels = new int[largura*altura];
 		ladrilhos = new Ladrilho[largura][altura];
 		
+		/* Escolher as paredes (ladrilhos) e pastilhas aleatoriamente */
+		for (int x=0; x < largura; x++)
+			for (int y=0; y < altura; y++)
+			{
+				if ( !( (x == 0 || x == largura-1) && (y == 0 || y == altura-1) ) && // Preencher os cantos
+					 ( (x == 0 || x == largura/2 || x == largura-1) &&
+					   (y == 0 || y == altura/2 || y == altura-1) ) || // Fazer as 4 aberturas laterais
+					 ( (y == altura-2 || y == 1) && (x != 0 && x != largura-1)  ) ||
+					 ( (x == largura-2 || x == 1) && (y != 0 && y != altura-1) )  ) //
+				{
+					pastilhas.add(new Pastilha(x*32,y*32, false));
+					continue;
+				}
+			
+				if (x == 0 || y == 0 || x == largura-1 || y == altura-1)
+					ladrilhos[x][y] = new Ladrilho(x*32, y*32);
+				else
+					if (y % 2 == 0)
+					{
+						if (aleatorio.nextInt(4) % 4 == 0)
+							pastilhas.add(new Pastilha(x*32,y*32, false));
+						else
+							ladrilhos[x][y] = new Ladrilho(x*32, y*32);
+					
+					} else
+						pastilhas.add(new Pastilha(x*32,y*32, false));
+			}
+
+		/* Escolher posições aleatórias para os fantasmas */
 		for(int contFantasma=0; contFantasma < 4; contFantasma++)
 		{
+			int x,y;
+			do
+			{
+				x = aleatorio.nextInt(largura);
+				y = aleatorio.nextInt(altura);
 			
+			} while (ladrilhos[x][y] != null);
+			
+			if (contFantasma == 0)
+				fantasmas.add(new Fantasma_Aleatorio(x*32,y*32));
+			else if (contFantasma == 1)
+				fantasmas.add(new Fantasma_Perseguidor(x*32,y*32));
+			else if (contFantasma == 2)
+				fantasmas.add(new Fantasma_Evasivo(x*32,y*32));
+			else
+				fantasmas.add(new Fantasma_Prestigiador(x*32,y*32));
 		}
+		
+		/* Escolher posições aleatórias para as pastilhas especiais */
+		for(int contPastilha=0; contPastilha < 6; contPastilha++)
+		{
+			int x,y;
+			do
+			{
+				x = aleatorio.nextInt(largura);
+				y = aleatorio.nextInt(altura);
+			
+			} while (ladrilhos[x][y] != null);
+			
+			pastilhas.add(new Pastilha(x*32,y*32, true));
+		}
+		
+		/* Escolher uma posição aleatória para o jogador */
+		int x,y;
+		do
+		{
+			x = aleatorio.nextInt(largura);
+			y = aleatorio.nextInt(altura);
+		
+		} while (ladrilhos[x][y] != null);
+		Pacman.jogador.x = x*32;
+		Pacman.jogador.y = y*32;
 		
 	}
 	
@@ -74,7 +142,6 @@ public class Mapa
 					
 					} else if (pixel == 0xFF0000FF) // Se for azul, é onde o jogador deve nascer
 					{
-						// QUEBRA DE ENCAPSULAMENTO: variáveis públicas
 						Pacman.jogador.x = x*32;
 						Pacman.jogador.y = y*32;
 					
