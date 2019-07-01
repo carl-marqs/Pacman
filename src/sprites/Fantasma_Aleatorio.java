@@ -7,20 +7,21 @@ public class Fantasma_Aleatorio extends Fantasma
 {
 	private static final long serialVersionUID = 1L;
 	
-	private Random aleatorio = new Random();
+	private Random aleatorio = new Random(); // variável para aleatorização
 
-	public Fantasma_Aleatorio(int x, int y) {
+	public Fantasma_Aleatorio(int x, int y)
+	{
 		super(x, y);
-		velocidade = 2;
-		direcao = aleatorio.nextInt(4);
+		velocidade = 2; // é mais rápido que os outros fantasmas
+		direcao = aleatorio.nextInt(4); // começa olhando para uma posição aleatória
 	}
 	
 	@Override
-	public void tick()
+	public void atualizar()
+	// Calcula o comportamento do fantasma
 	{
-		super.tick();
-		if (morto)
-			return;
+		super.atualizar();
+		if (morto) return; // se está morto, não se mexer
 		
 		if (direcao == 0)
 		{
@@ -53,8 +54,7 @@ public class Fantasma_Aleatorio extends Fantasma
 	}
 	
 	public void render(Graphics graficos)
-	{
-		super.render(graficos, 112);
-	}
+	// Diz qual o índice do seu sprite para a classe pai renderizar
+	{ super.render(graficos, 112); }
 
 }

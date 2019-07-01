@@ -11,24 +11,33 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.FileInputStream;
 
 import javax.swing.JFrame;
+
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 public class Pacman extends Canvas implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static int LARGURA = 1184, ALTURA = 608; // Resolução do jogo
+	// Resolução do jogo
+	public static int LARGURA = 1184;
+	public static int ALTURA = 608;
 	
-	private boolean estaJOGANDO = false; // Armazena o estado do jogo
-	private Thread thread;
-	
+	// Elementos do jogo
 	public static Jogador jogador;
 	public static Mapa mapa; // Armazena em qual labirinto jogar
 	public static Malha malha;
 	
+	// Controlam o estado de execução do jogo
+	private boolean estaJOGANDO = false;
 	public static final int PAUSADO = 0, JOGANDO = 1;
 	public static int ESTADO = PAUSADO;
+	
+	private Thread thread;
 	
 	public static void main(String[] args)
 	{
@@ -56,12 +65,14 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		jogador = new Jogador((LARGURA/2)-16, (ALTURA/2)-16); // Insere o jogador no meio do mapa
 		malha = new Malha("/assets/pacman_spritesheet.png"); // Usando a malha de sprites original
 		
+		tocarMusica("res/sons/pacman_beginning.wav");
+		
 		addKeyListener(this);
 	}
 	
 	public synchronized void start()
 	{
-		if (estaJOGANDO) return; // Se já estiver JOGANDO, não fazer nada
+		if (estaJOGANDO) return; // Se já estiver jogando, não fazer nada
 		estaJOGANDO = true; // O jogo começou a ser executado nesse frame
 		
 		thread = new Thread(this);
@@ -77,17 +88,17 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		catch (InterruptedException e) { e.printStackTrace(); } 
 	}
 	
-	private void tick()
+	private void atualizar()
 	// Calcula toda a lógica do jogo
 	{
 		if (ESTADO == JOGANDO)
 		{
-			jogador.tick(); // Calcula a lógica do jogador
-			mapa.tick();
+			jogador.atualizar(); // Calcula a lógica do jogador
+			mapa.atualizar();
 		}
 	}
 	
-	private void render()
+	private void renderizar()
 	{
 		BufferStrategy buffer = getBufferStrategy();
 		if (buffer == null)
@@ -103,8 +114,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		if (ESTADO == JOGANDO)
 		// Se o jogo não está pausado, renderizar o jogador, o mapa e o texto
 		{
-			jogador.render(graficos); // Renderizar o jogador também
-			mapa.render(graficos);
+			jogador.renderizar(graficos); // Renderizar o jogador também
+			mapa.renderizar(graficos);
 			
 			// Exibir a pontuação
 			graficos.setColor(Color.WHITE);
@@ -162,8 +173,8 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			while (delta >= 1)
 			// Mantém o jogo JOGANDO à velocidade tickSegundo
 			{
-				tick(); // Lógica do jogo
-				render();
+				atualizar(); // Lógica do jogo
+				renderizar();
 				delta--;
 			}
 		}
@@ -185,7 +196,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 		
 		} else
 		// Se estiver pausado, esperar o jogador pressionar enter para começá-lo
-		{			
+		{
 			if (tecla.getKeyCode() == KeyEvent.VK_ENTER)
 			{
 				mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
@@ -193,7 +204,7 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 			}
 			else if (tecla.getKeyCode() == KeyEvent.VK_SPACE)
 			{
-				mapa = new Mapa("/mapas/mapa1.png"); // Começar com um mapa gerado a partir de um arquivo
+				mapa = new Mapa(); // Começar com um mapa gerado a partir de um arquivo
 				ESTADO = JOGANDO;
 			}
 		}
@@ -212,4 +223,21 @@ public class Pacman extends Canvas implements Runnable, KeyListener
 
 	@Override
 	public void keyTyped(KeyEvent tecla) {}
+	
+	public static void tocarMusica(String caminho)
+	// Tocar uma música a partir do caminho do arquivo
+	{
+		try
+		{ AudioPlayer.player.start(new AudioStream(new FileInputStream(new File(caminho)))); }
+		catch (Exception e)
+		{ System.out.println(e.getMessage()); }
+	}
+	
+	public static void pausar()
+	// Encerrar o jogo atual e voltar para a tela inicial
+	{
+		ESTADO = PAUSADO;
+		mapa = new Mapa();
+		jogador = new Jogador((Pacman.LARGURA/2)-16, (Pacman.ALTURA/2)-16); // Insere o jogador no meio do mapa
+	}
 }

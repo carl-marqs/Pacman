@@ -16,20 +16,21 @@ public class Fantasma_Evasivo extends Fantasma
 	public Fantasma_Evasivo(int x, int y)
 	{
 		super(x, y);
-		velocidade = 2;
+		velocidade = 2; // é mais rápido que os outros fantasmas
 	}
 	
 	@Override
-	public void tick()
+	public void atualizar()
+	// Calcula o comportamento do fantasma
+	// Faz basicamente o oposto do que o perseguidor faz com o jogador, com o ponto médio da posição dos outros fantasmas
 	{
-		super.tick();
-		if (morto)
-			return;
+		super.atualizar();
+		if (morto) return; // se está morto, não se mexer
 		
+		// Calcular a posição média de todos os fantasmas, menos si mesmo
 		float x_medio = Pacman.mapa.fantasmas.get(0).x;
 		float y_medio = Pacman.mapa.fantasmas.get(0).y;
-		
-		for (int i=1; i < Pacman.mapa.fantasmas.size(); i++)
+		for (int i=1; i < Pacman.mapa.fantasmas.size()-1; i++)
 		{
 			x_medio = (x_medio + Pacman.mapa.fantasmas.get(i).x)/2;
 			y_medio = (y_medio + Pacman.mapa.fantasmas.get(i).y)/2;
@@ -205,8 +206,7 @@ public class Fantasma_Evasivo extends Fantasma
 	
 	@Override
 	public void render(Graphics graficos)
-	{
-		super.render(graficos, 96);
-	}
+	// Diz qual o índice do seu sprite para a classe pai renderizar
+	{ super.render(graficos, 96); }
 
 }

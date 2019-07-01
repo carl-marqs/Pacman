@@ -8,12 +8,14 @@ public class Pastilha extends Rectangle
 {
 	private static final long serialVersionUID = 1L;
 	
-	public boolean especial;
+	public boolean especial; // indica se é uma pastilha especial
 
 	public Pastilha(int x, int y, boolean especial)
+	// Criar novo quadrado a partir de uma posição
 	{
 		this.especial = especial;
 		
+		// Define o tamanho do retângulo
 		if (especial)
 			setBounds(x+10,y+10, 12,12);
 		else

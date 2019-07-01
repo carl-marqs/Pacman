@@ -15,16 +15,17 @@ public class Fantasma_Perseguidor extends Fantasma
 	private Random aleatorio = new Random();
 
 	public Fantasma_Perseguidor(int x, int y)
-	{
-		super(x, y);
-	}
+	{ super(x, y); }
 	
 	@Override
-	public void tick()
+	public void atualizar()
+	// Calcula o comportamento do fantasma
+	// Começa no modo inteligente, no qual fica perseguindo o jogador, e fica por 12s.
+	// Depois de 12s, para dar chance do jogador fugir, ele fica no modo aleatório por 2s.
+	// Quando não sabe o que fazer, ele muda pro modo "preso", que escolhe outra posição pra seguir.
 	{
-		super.tick();
-		if (morto)
-			return;
+		super.atualizar();
+		if (morto) return; // se está morto, não se mexer
 		
 		if (modo == 0) // Se está no modo aleatório...
 		{
@@ -100,6 +101,7 @@ public class Fantasma_Perseguidor extends Fantasma
 					direcao = 3;
 				}
 			
+			// Se estiver alinhado com o jogador, está se movendo, teoricamente
 			if (x == Pacman.jogador.x && y == Pacman.jogador.y)
 				movendo = true;
 			
@@ -203,8 +205,7 @@ public class Fantasma_Perseguidor extends Fantasma
 	
 	@Override
 	public void render(Graphics graficos)
-	{
-		super.render(graficos, 64);
-	}
+	// Diz qual o índice do seu sprite para a classe pai renderizar
+	{ super.render(graficos, 64); }
 
 }
